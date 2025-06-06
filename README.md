@@ -1,7 +1,8 @@
 import http.server
 import socketserver
 
-PORT = 8080
+import os
+PORT = int(os.environ.get("PORT", 8080))
 
 class Proxy(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
