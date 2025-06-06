@@ -1,17 +1,22 @@
-import http.server
-import socketserver
-
 import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+# المنفذ يقرأ من متغير البيئة الذي توفره Koyeb
 PORT = int(os.environ.get("PORT", 8080))
 
-class Proxy(http.server.SimpleHTTPRequestHandler):
+class SimpleProxyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
+        self.send_response(200)  # OK
+        self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write(b"Proxy is working")
+        self.wfile.write(b"✅ Proxy is working from Koyeb!")
 
-handler = Proxy
+    def log_message(self, format, *args):
+        # إيقاف طباعة السجلات في كل طلب لتقليل الضوضاء
+        return
 
-with socketserver.TCPServer(("", PORT), handler) as httpd:
-    print("Serving at port", PORT)
+if __name__ == "__main__":
+    server_address = ("", PORT)
+    httpd = HTTPServer(server_address, SimpleProxyHandler)
+    print(f"Serving at port {PORT}")
     httpd.serve_forever()
